@@ -1,0 +1,101 @@
+spring:
+  application:
+    name: authentication_module
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            scope: profile,email
+
+          facebook:
+            client-id: ${FACEBOOK_CLIENT_ID}
+            client-secret: ${FACEBOOK_CLIENT_SECRET}
+            redirect-uri: "{baseUrl}/login/oauth2/code/facebook"
+            scope: public_profile,email
+
+          apple:
+            provider: apple-oidc
+            client-id: ${APPLE_CLIENT_ID}
+            client-secret: ${APPLE_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/apple"
+            scope: name,email
+            client-authentication-method: client_secret_post
+
+        provider:
+          google:
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: sub
+
+          facebook:
+            user-info-uri: https://graph.facebook.com/me?fields=id,name,email
+            user-name-attribute: id
+
+          apple-oidc:
+            authorization-uri: https://appleid.apple.com/auth/authorize
+            token-uri: https://appleid.apple.com/auth/token
+            user-info-uri: https://appleid.apple.com/auth/userinfo
+            jwk-set-uri: https://appleid.apple.com/auth/keys
+            user-name-attribute: sub
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  name: ${APP_NAME:Authentication Module}
+
+jwt:
+  secret: ${JWT_SECRET:your-super-secret-key-change-in-production}
+  expiration: 3600000
+  refresh-expiration: 604800000
+
+mfa:
+  otp:
+    length: 6
+    expiry-minutes: 10
+    max-attempts: 5
+  sms:
+    provider: ${MFA_SMS_PROVIDER:twilio}
+
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID:}
+  auth-token: ${TWILIO_AUTH_TOKEN:}
+  from-number: ${TWILIO_FROM_NUMBER:}
+
+webauthn:
+  rp:
+    name: "Your App Name"
+    id: ${WEBAUTHN_RP_ID:localhost}
+  origin: ${WEBAUTHN_ORIGIN:http://localhost:8080}
+  timeout: 60000
