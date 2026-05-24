@@ -1,10 +1,11 @@
 package com.zelig.authentication_module.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelig.authentication_module.dto.LoginResponse;
-import com.zelig.authentication_module.entity.User;
-import com.zelig.authentication_module.service.AuthenticationService;
-import com.zelig.authentication_module.service.OAuth2Service;
+import com.zelig.authentication_module.api.dto.LoginResponse;
+import com.zelig.authentication_module.domain.entity.User;
+import com.zelig.authentication_module.service.auth.AuthenticationService;
+import com.zelig.authentication_module.api.util.RequestUtils;
+import com.zelig.authentication_module.service.oauth.OAuth2Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,18 +35,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         User user = oauth2Service.findOrCreateUser(provider, oauth2User);
         LoginResponse loginResponse = authenticationService.completeLogin(
                 user,
-                request.getHeader("User-Agent"),
-                clientIp(request));
+                RequestUtils.userAgent(request),
+                RequestUtils.clientIp(request));
 
         response.setContentType("application/json");
         objectMapper.writeValue(response.getWriter(), loginResponse);
     }
 
-    private static String clientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
 }

@@ -1,6 +1,6 @@
 package com.zelig.authentication_module.security;
 
-import com.zelig.authentication_module.service.TokenService;
+import com.zelig.authentication_module.service.auth.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

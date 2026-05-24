@@ -2,7 +2,7 @@ package com.zelig.authentication_module.config;
 
 import com.zelig.authentication_module.security.JwtAuthenticationFilter;
 import com.zelig.authentication_module.security.OAuth2LoginSuccessHandler;
-import com.zelig.authentication_module.service.TokenService;
+import com.zelig.authentication_module.service.auth.TokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,6 +19,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+/**
+ * Stateless JWT security: public {@code /api/auth/**}, OAuth2 login, JWT filter for everything else.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
